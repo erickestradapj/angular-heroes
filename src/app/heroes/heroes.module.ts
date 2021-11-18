@@ -1,7 +1,9 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FlexLayoutModule } from '@angular/flex-layout';
 
 import { HeroesRoutingModule } from './heroes-routing.module';
+import { MaterialModule } from '../material/material.module';
 
 import { AddComponent } from './pages/add/add.component';
 import { HeroComponent } from './pages/hero/hero.component';
@@ -17,6 +19,11 @@ import { SearchComponent } from './pages/search/search.component';
     HomeComponent,
     ListComponent,
   ],
-  imports: [CommonModule, HeroesRoutingModule],
+  imports: [
+    CommonModule,
+    HeroesRoutingModule,
+    FlexLayoutModule,
+    MaterialModule,
+  ],
 })
 export class HeroesModule {}
