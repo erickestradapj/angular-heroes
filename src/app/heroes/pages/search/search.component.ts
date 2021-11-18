@@ -6,12 +6,19 @@ import { HeroesService } from '../../services/heroes.service';
 @Component({
   selector: 'app-search',
   templateUrl: './search.component.html',
-  styles: [],
+  styles: [
+    `
+      .card {
+        width: 400px;
+        height: 500px;
+      }
+    `,
+  ],
 })
 export class SearchComponent implements OnInit {
   term: string = '';
   heroes: Hero[] = [];
-  heroSelected!: Hero;
+  heroSelected: Hero | undefined;
 
   constructor(private heroesService: HeroesService) {}
 
@@ -19,16 +26,20 @@ export class SearchComponent implements OnInit {
 
   public searching() {
     this.heroesService
-      .suggestions(this.term)
+      .suggestions(this.term.trim())
       .subscribe((heroes) => (this.heroes = heroes));
     console.log('searching()', this.term);
   }
 
   public optionSelected(event: MatAutocompleteSelectedEvent) {
+    if (!event.option.value) {
+      this.heroSelected = undefined;
+      return;
+    }
+
     const hero: Hero = event.option.value;
     this.term = hero.superhero;
     console.log('optionSelected()', this.term);
-
     this.heroesService
       .getHeroById(hero.id!)
       .subscribe((hero) => (this.heroSelected = hero));
