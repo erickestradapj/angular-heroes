@@ -3,6 +3,7 @@ import { Hero } from '../interfaces/heroes.interface';
 
 @Pipe({
   name: 'image',
+  // pure:false
 })
 export class ImagePipe implements PipeTransform {
   transform(hero: Hero, ...args: unknown[]): string {

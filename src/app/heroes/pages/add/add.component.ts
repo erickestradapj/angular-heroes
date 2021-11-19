@@ -1,8 +1,16 @@
 import { Component, OnInit } from '@angular/core';
+
 import { Hero, Publisher } from '../../interfaces/heroes.interface';
+
 import { HeroesService } from '../../services/heroes.service';
+
 import { ActivatedRoute, Router } from '@angular/router';
+
 import { switchMap } from 'rxjs';
+
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { ConfirmComponent } from '../../components/confirm/confirm.component';
 
 @Component({
   selector: 'app-add',
@@ -41,7 +49,9 @@ export class AddComponent implements OnInit {
   constructor(
     private heroesService: HeroesService,
     private activatedRoute: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private snackBar: MatSnackBar,
+    public dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -63,18 +73,35 @@ export class AddComponent implements OnInit {
       // Update
       this.heroesService
         .updateHero(this.hero)
-        .subscribe((hero) => console.log('Updating hero...', hero));
+        .subscribe(() => this.showMessage('Registry has been updated'));
     } else {
       // Create
-      this.heroesService
-        .addHero(this.hero)
-        .subscribe((hero) => this.router.navigate(['/heroes/edit', hero.id]));
+      this.heroesService.addHero(this.hero).subscribe((hero) => {
+        this.router.navigate(['/heroes/edit', hero.id]);
+        this.showMessage('Registry has been created');
+      });
     }
   }
 
   public delete(): void {
-    this.heroesService
-      .deleteHero(this.hero.id!)
-      .subscribe(() => this.router.navigate(['/heroes']));
+    this.dialog
+      .open(ConfirmComponent, {
+        width: '250px',
+        data: this.hero, // TODO: data
+      })
+      .afterClosed()
+      .subscribe((result) => {
+        if (result) {
+          this.heroesService
+            .deleteHero(this.hero.id!)
+            .subscribe(() => this.router.navigate(['/heroes']));
+        }
+      });
+  }
+
+  public showMessage(msg: string): void {
+    this.snackBar.open(msg, 'Ok!', {
+      duration: 2500,
+    });
   }
 }
